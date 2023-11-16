@@ -57,8 +57,9 @@ public class Main {
 		botoesNovoCadastro.add(novoPosto);
 		botoesNovoCadastro.add(novoVeiculo);
 		
-		logoContainer = new Panel(header.width/2 - WIDTH/66, header.height);
-		logoContainer.setBackground(Color.yellow);
+		logoContainer = new IconPanel(header.width/2 - WIDTH/66, header.height, System.getProperty("user.dir") + "\\src\\def\\" + "logo.png");
+		logoContainer.setOpaque(false);
+		logoContainer.setLayout(new FlowLayout(0, 25, 0));
 		
 		header.add(botoesNovoCadastro);
 		header.add(logoContainer);
@@ -156,3 +157,4 @@ public class Main {
 	}
 
 }
+
