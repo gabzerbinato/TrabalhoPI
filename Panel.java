@@ -10,7 +10,7 @@ public class Panel extends JPanel{
 		this.width = w;
 		this.height = h;
 		this.setPreferredSize(new Dimension(w, h));
-		this.setBorder(BorderFactory.createLineBorder(Color.green));
+		//this.setBorder(BorderFactory.createLineBorder(Color.green));
 		this.setBackground(Color.gray);
 	}
 	
