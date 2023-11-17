@@ -39,7 +39,7 @@ public class Janela {
 	JTable table;
 	JScrollPane tablePane;
 	JTextField filtroText;
-	EnterField kmAtual, qtd, preco, data;
+	public EnterField kmAtual, qtd, preco, data;
 
 	public Janela(Main m) {
 		
@@ -221,7 +221,7 @@ public class Janela {
 		}
 	}
 	
-	private class EnterField extends JPanel{
+	public class EnterField extends JPanel{
 		
 		JTextField texto;
 		JLabel nome;
