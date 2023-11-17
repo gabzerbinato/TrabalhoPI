@@ -1,57 +1,85 @@
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-import javax.swing.BorderFactory;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
+
+import graphics.*;
 
 public class Main {
-	Frame frame;
-	Panel p1, p2,
-		  header, registros,
-		  botoesNovoCadastro, logoContainer;
-	JButton novoPosto = new JButton("Novo posto"), 
-			novoVeiculo = new JButton("Novo veículo");
 	
-	int WIDTH = 1000, HEIGHT = 600;
+	static public int WIDTH = 1000, HEIGHT = 600;
+	static public String[] colunasTabela = {
+		"Data", "Veículo", "Valor total"	
+	};
+	static public Color DEF = new Color(235,235,235);
+	static ConectaMySQL conexao = new ConectaMySQL();
 	
-	public static void main(String[] args) {
-		new Main();
-	}
+	public Janela j;
 	
-	public Main() {
-		frame = new Frame(WIDTH, HEIGHT);
-		p1 = new Panel(WIDTH/100*57, HEIGHT);
-		p1.setLayout(new FlowLayout(5,5,FlowLayout.LEFT));
-		p1.setBackground(Color.blue);
-		p2 = new Panel(WIDTH/100*40, HEIGHT);
+	
+		public static void main(String[] args) {
+			new Main();
+		}
+	
+		public Main() {
+			j = new Janela(this);
+		}
+	
+	
+	public ActionListener al = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			String name = ((JButton)e.getSource()).getName();
+			
+			switch(name) {
+			case "novoPosto":
+				addNovo(name);
+				break;
+			case "novoVeiculo":
+				addNovo(name);
+				break;
+			case "gravar":
+				gravarNovoRegistro();
+				break;
+			}
+		}
+	};
 		
-		header = new Panel(p1.width-WIDTH/100, p1.height/100*30);
-		header.setBackground(Color.red);
-		header.setLayout(new FlowLayout(FlowLayout.LEFT));
-		registros = new Panel(p1.width-WIDTH/100, p1.height/100*60);
+		private String ask(String t) {return JOptionPane.showInputDialog(t);}
 		
-		botoesNovoCadastro = new Panel(header.width/2, header.height);
-		botoesNovoCadastro.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 15));
+		private void addNovo(String id) {
+			if(id.equals("novoPosto")) {
+				Posto posto = new Posto(ask("Insira o nome do posto:"), 
+										ask("Insira a localização do posto:"));
+				p(posto.nome);
+			} else if(id.equals("novoVeiculo")) {
+				Veiculo veiculo = new Veiculo(ask("Insira o modelo do veículo:"),
+											  ask("Insira a placa do veículo:"),
+											  ask("Insira a cor do veículo:"));
+				// ADICIONAR AO BANCO DE DADOS
+			}
+			
+			update();
+			
+		}
 		
-		logoContainer = new Panel(header.width/2 - WIDTH/66, header.height);
-		logoContainer.setBackground(Color.yellow);
+		private void update() {
+			// CONSULTAR BANCO DE DADOS 
+			DefaultComboBoxModel<String> modelPosto = new DefaultComboBoxModel<>();
+			//selecionarPosto.setModel(modelPosto);
+			
+			// CONSULTAR BANCO DE DADOS
+			DefaultComboBoxModel<String> modelVeiculo = new DefaultComboBoxModel<>();
+			//selecionarVeiculo.setModel(modelVeiculo);
+		}
 		
-		novoPosto.setPreferredSize(new Dimension(botoesNovoCadastro.width - 20, botoesNovoCadastro.height/3));
-		novoVeiculo.setPreferredSize(new Dimension(botoesNovoCadastro.width - 20, botoesNovoCadastro.height/3));
+		public void gravarNovoRegistro() {
+			
+		}
 		
-		botoesNovoCadastro.add(novoPosto);
-		botoesNovoCadastro.add(novoVeiculo);
-		
-		frame.add(p1);
-		frame.add(p2);
-		
-		p1.add(header);
-		p1.add(registros);
-		
-		header.add(botoesNovoCadastro);
-		header.add(logoContainer);
-		
-	}
+		private <T> void p(T o) {System.out.println(o);}
 
 }
