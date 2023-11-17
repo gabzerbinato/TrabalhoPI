@@ -77,7 +77,16 @@ public class Main {
 		}
 		
 		public void gravarNovoRegistro() {
-			
+			if(j.kmAtual.getText().equals("") ||
+			   j.preco.getText().equals("") ||
+			   j.qtd.getText().equals("") ||
+			   j.data.getText().equals("") ||
+			   (!j.alcool.isSelected() &&
+				!j.gasolina.isSelected()) ||
+			   j.selecionarPosto.getSelectedItem().equals("Selecionar posto") ||
+			   j.selecionarVeiculo.getSelectedItem().equals("Selecionar veículo")) {
+				JOptionPane.showMessageDialog(null, "Por favor, preencha todos os campos!");
+			}
 		}
 		
 		private <T> void p(T o) {System.out.println(o);}
