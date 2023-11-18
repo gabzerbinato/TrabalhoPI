@@ -10,10 +10,10 @@ public class Frame extends JFrame{
 		super();
 		this.setSize(new Dimension(w, h));
 		this.setResizable(false);
-		this.getContentPane().setBackground(Color.magenta);
+		this.getContentPane().setBackground(new Color(255,255,255));
 		this.setLocationRelativeTo(null);
-		this.setLayout(new FlowLayout(5, 5, FlowLayout.LEFT));
-		//this.setLayout(new GridLayout(1,2));
+		this.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setVisible(true);
 	}
 }
