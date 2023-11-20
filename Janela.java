@@ -5,114 +5,144 @@ import java.text.*;
 import javax.swing.*;
 import javax.swing.table.*;
 
-public class Janela implements ActionListener {
-    Frame frame;
-    Panel p1, p2,
-            header, registros,
-            botoesNovoCadastro, logoContainer,
-            registroHeader, registroLeft, registroRight,
-            camposCont, filtros;
+public class Janela extends JFrame implements ActionListener {
+    JFrame frame;
+    JPanel p1, p2, header, registros, botoesNovoCadastro, registroHeader, filtros, camposCont, registroRight,
+            registroLeft;
     JLabel registrarAbastecimento, tipoAbastecimento, filtrarPor;
     JButton novoPosto, novoVeiculo, gravarRegistro, filtrar;
     ButtonGroup bg = new ButtonGroup();
     JRadioButton alcool, gasolina;
-    DefaultComboBoxModel<String> postoComboBox = new DefaultComboBoxModel<>(),
-            veiculoComboBox = new DefaultComboBoxModel<>();
     JComboBox selecionarPosto, selecionarVeiculo, filtroDropdown;
     JTable table;
     JTextField filtroText;
     JScrollPane tablePane;
-
     DefaultTableModel model = new DefaultTableModel();
     TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
 
     static int WIDTH = 1000, HEIGHT = 500;
-    static String[] colunasTabela = {
-            "Data", "Veículo", "Valor total", "km/L"
-    };
-    static Color DEF = new Color(255, 255, 255);
+    static String[] colunasTabela = { "Data", "Veículo", "Valor total", "km/L" };
 
-    public EnterField kmAtual, qtd, preco, data;
+    JTextField kmAtual;
+    JTextField qtd;
+    JTextField preco;
+    public JTextField data;
 
     public static void main(String[] args) {
         new Janela();
     }
 
     public Janela() {
-        frame = new Frame(WIDTH, HEIGHT);
-        p1 = new Panel(FlowLayout.LEFT, WIDTH / 100 * 57, HEIGHT, 2, 2, true);
-        p2 = new Panel(FlowLayout.CENTER, WIDTH / 100 * 40, HEIGHT, 5, 5, true);
+        frame = criarFrame(WIDTH, HEIGHT);
+        p1 = criarPainel(FlowLayout.LEFT, WIDTH / 100 * 57, HEIGHT, 2, 2, true);
+        p2 = criarPainel(FlowLayout.CENTER, WIDTH / 100 * 40, HEIGHT, 5, 5, true);
+        header = criarPainel(FlowLayout.LEFT, p1.getWidth() - WIDTH / 100, p1.getHeight() / 100 * 30, -1, 0, false);
 
-        header = new Panel(FlowLayout.LEFT, p1.width - WIDTH / 100, p1.height / 100 * 30, -1, 0, false);
+        header = criarPainel(FlowLayout.LEFT, p1.getWidth() - 7, p1.getHeight() / 100 * 30, -1, 0, false);
 
-        botoesNovoCadastro = new Panel(FlowLayout.LEFT, header.width / 2, header.height, 5, 15, false);
-        novoPosto = criarBotao(botoesNovoCadastro, botoesNovoCadastro.width - 20, botoesNovoCadastro.height / 3,
-                "Novo Posto");
-        novoVeiculo = criarBotao(botoesNovoCadastro, botoesNovoCadastro.width - 20, botoesNovoCadastro.height / 3,
-                "Novo Veículo");
+        System.out.println(header.getWidth());
+        System.out.println(header.getHeight());
+        botoesNovoCadastro = criarPainel(FlowLayout.LEFT, header.getWidth() / 2, header.getHeight() - 5, 5, 15, false);
+        novoPosto = criarBotao(botoesNovoCadastro, botoesNovoCadastro.getWidth() - 20,
+                botoesNovoCadastro.getHeight() / 3, "Novo Posto");
+        novoVeiculo = criarBotao(botoesNovoCadastro, botoesNovoCadastro.getWidth() - 20,
+                botoesNovoCadastro.getHeight() / 3, "Novo Veículo");
+        botoesNovoCadastro.add(novoPosto);
+        botoesNovoCadastro.add(novoVeiculo);
 
-        logoContainer = new IconPanel(header.width / 2 - WIDTH / 66, header.height, "logo.png");
-        logoContainer.setOpaque(false);
-        logoContainer.setLayout(new FlowLayout(0, 25, 0));
+        JPanel campoImagem = criarPainel(FlowLayout.LEFT, (header.getWidth() / 2) - 1, header.getHeight() - 5, 0, 0,
+                false);
+        ImageIcon img = new ImageIcon("logo.png");
+        img = new ImageIcon(img.getImage().getScaledInstance(campoImagem.getWidth() - 7, campoImagem.getHeight() - 7,
+                Image.SCALE_FAST));
+        JLabel imagem = new JLabel(img);
         header.add(botoesNovoCadastro);
-        header.add(logoContainer);
+        campoImagem.add(imagem);
+        header.add(campoImagem);
 
-        registros = new Panel(FlowLayout.LEFT, p1.width - WIDTH / 100, p1.height / 100 * 68, 0, 0, true);
-        registroHeader = new Panel(FlowLayout.CENTER, registros.width - 3, registros.height / 10, 0, FlowLayout.CENTER,
-                true);
+        registros = criarPainel(FlowLayout.LEFT, p1.getWidth() - WIDTH / 100, p1.getHeight() / 100 * 68, 0, 0, true);
+        registroHeader = criarPainel(FlowLayout.CENTER, registros.getWidth() - 3, registros.getHeight() / 10, 0,
+                FlowLayout.CENTER, true);
         registroHeader.setBackground(Color.gray);
         registrarAbastecimento = new JLabel("Registrar Abastecimento");
         registroHeader.add(registrarAbastecimento);
-
-        registroLeft = new Panel(FlowLayout.CENTER, registros.width / 2, registros.height / 3, 5, 15, false);
-        registroRight = new Panel(FlowLayout.CENTER, registros.width / 2 - WIDTH / 150, registros.height / 3, 5, 10,
+        registroLeft = criarPainel(FlowLayout.CENTER, registros.getWidth() / 2, registros.getHeight() / 100 * 33, 5, 15,
                 false);
+        registroRight = criarPainel(FlowLayout.CENTER, registros.getWidth() / 2 - WIDTH / 150,
+                registros.getHeight() / 100 * 35, 5, 10, false);
 
-        selecionarPosto = criarComboBox(selecionarPosto, "Selecionar Posto", postoComboBox);
-        selecionarVeiculo = criarComboBox(selecionarVeiculo, "Selecionar Veículo", veiculoComboBox);
+        selecionarVeiculo = new JComboBox<>();
+        selecionarPosto = new JComboBox<>();
+        selecionarVeiculo.addItem("Selecionar Veículo");
+        selecionarPosto.addItem("Selecionar Posto");
+
+        try {
+            ConectaMySQL conexao = new ConectaMySQL();
+            Connection cn = conexao.openDB();
+            Statement st = cn.createStatement();
+            ResultSet rsVeiculo = st.executeQuery("SELECT * FROM VEICULO");
+            while (rsVeiculo.next()) {
+                String placa = rsVeiculo.getString("Placa");
+                selecionarVeiculo.addItem(placa);
+            }
+            ResultSet rsPostos = st.executeQuery("SELECT * FROM POSTO");
+            while (rsPostos.next()) {
+                String nome = rsPostos.getString("Nome");
+                String localizacao = rsPostos.getString("Localizacao");
+                selecionarPosto.addItem(nome + " : " + localizacao);
+            }
+            // conexao.closeDB();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Falha ao realizar a operação.");
+        }
+
+        selecionarPosto.setPreferredSize(new Dimension(registroLeft.getWidth() / 100 * 80, 25));
+        selecionarVeiculo.setPreferredSize(new Dimension(registroLeft.getWidth() / 100 * 80, 25));
+
         registroLeft.add(selecionarPosto);
         registroLeft.add(selecionarVeiculo);
 
         tipoAbastecimento = new JLabel("Tipo de abastecimento");
         registroRight.add(tipoAbastecimento);
         alcool = new JRadioButton("Álcool");
-        alcool.setPreferredSize(new Dimension(registroRight.width / 100 * 95, registroRight.height / 4));
+        alcool.setPreferredSize(new Dimension(registroRight.getWidth() / 100 * 95, registroRight.getHeight() / 4));
         alcool.setOpaque(false);
         gasolina = new JRadioButton("Gasolina");
-        gasolina.setPreferredSize(new Dimension(registroRight.width / 100 * 95, registroRight.height / 4));
+        gasolina.setPreferredSize(new Dimension(registroRight.getWidth() / 100 * 95, registroRight.getHeight() / 4));
         gasolina.setOpaque(false);
         bg.add(alcool);
         bg.add(gasolina);
         registroRight.add(alcool);
         registroRight.add(gasolina);
 
-        camposCont = new Panel(FlowLayout.LEFT, registros.width - 5, registros.height / 100 * 63, 2, 10, false);
+        camposCont = criarPainel(FlowLayout.RIGHT, registros.getWidth() - 5, registros.getHeight() / 100 * 65, 2, 10,
+                false);
 
-        kmAtual = new EnterField("km atual");
-        qtd = new EnterField("quantidade");
-        preco = new EnterField("preço / L");
-        data = new EnterField("Data");
+        kmAtual = novoTextFiel(camposCont, "KM Atual");
+        qtd = novoTextFiel(camposCont, "quantidade");
+        preco = novoTextFiel(camposCont, "preço / L");
+        data = novoTextFiel(camposCont, "Data");
 
-        EnterField[] campos = { kmAtual, qtd, preco, data };
+        gravarRegistro = criarBotao(camposCont, 150, 25, "Gravar Registro");
+        camposCont.add(gravarRegistro);
 
-        for (EnterField ef : campos) {
-            ef.init(new Dimension(WIDTH / 2, camposCont.height / 9));
-            camposCont.add(ef);
-        }
+        registros.add(registroHeader);
+        registros.add(registroLeft);
+        registros.add(registroRight);
+        registros.add(camposCont);
 
-        filtros = new Panel(FlowLayout.CENTER, p2.width / 100 * 98, p2.height / 10, 2, 0, false);
+        filtros = criarPainel(FlowLayout.CENTER, p2.getWidth() / 100 * 98, p2.getHeight() / 10, 2, 0, false);
 
         filtrarPor = new JLabel("Filtrar por:");
-        filtrarPor.setPreferredSize(new Dimension(filtros.width, filtros.height / 3));
         filtroDropdown = new JComboBox(new String[] { "Veículo", "Data" });
         filtroText = new JTextField();
-        filtroText.setPreferredSize(new Dimension(filtros.width / 2, filtros.height / 2));
+        filtroText.setPreferredSize(new Dimension(filtros.getWidth() / 3, filtros.getHeight() / 2));
+        filtrar = criarBotao(filtros, 80, filtros.getHeight() / 2, "Filtrar");
 
         filtros.add(filtrarPor);
         filtros.add(filtroDropdown);
         filtros.add(filtroText);
-        filtrar = criarBotao(filtros, 80, 35, "Filtrar");
-
+        filtros.add(filtrar);
 
         table = new JTable();
 
@@ -123,22 +153,15 @@ public class Janela implements ActionListener {
         table.setModel(model);
 
         tablePane = new JScrollPane(table);
-        tablePane.setPreferredSize(new Dimension(p2.width / 100 * 98, p2.height / 100 * 85));
+        tablePane.setPreferredSize(new Dimension(p2.getWidth() / 100 * 98, p2.getHeight() / 100 * 85));
 
         model = atualizarTabela(model);
-
-        registros.add(registroHeader);
-        registros.add(registroLeft);
-        registros.add(registroRight);
-
-        gravarRegistro = criarBotao(camposCont, 150, 30, "Gravar Registro");
-
-        registros.add(camposCont);
 
         p1.add(header);
         p1.add(registros);
         p2.add(filtros);
         p2.add(tablePane);
+
         frame.add(p1);
         frame.add(p2);
         frame.pack();
@@ -176,7 +199,7 @@ public class Janela implements ActionListener {
                     resposta = JOptionPane.showConfirmDialog(null, posto);
                     if (resposta == 0) {
                         posto.cadastrarPosto();
-                        postoComboBox.addElement(nome + " : " + localizacao);
+                        selecionarPosto.addItem(nome + " : " + localizacao);
                     }
                 } else {
                     JOptionPane.showMessageDialog(null, "Todos os campos devem estar preenchidos!");
@@ -202,16 +225,23 @@ public class Janela implements ActionListener {
                     resposta = JOptionPane.showConfirmDialog(null, novoVeiculo);
                     if (resposta == 0) {
                         novoVeiculo.cadastrarVeiculo();
-                        veiculoComboBox.addElement(novoVeiculo.getPlaca());
+                        selecionarVeiculo.addItem(novoVeiculo.getPlaca());
                     }
                 } else {
                     JOptionPane.showMessageDialog(null, "Todos os campos devem estar preenchidos!");
                 }
             }
-    
+        } else if (e.getSource() == gravarRegistro) {
+
             String posto = selecionarPosto.getSelectedItem().toString();
             String veiculo = selecionarVeiculo.getSelectedItem().toString();
             int km = Integer.parseInt(kmAtual.getText());
+            double ultimaKM = calcularUltimaKM(veiculo);
+            System.out.println(ultimaKM);
+            if(km<ultimaKM){
+                System.out.println("km menor que ultimakm");
+                return;
+            }
             int qtdAbastecida = Integer.parseInt(qtd.getText());
             double precoL = Double.parseDouble(preco.getText());
             String dt = data.getText();
@@ -261,7 +291,7 @@ public class Janela implements ActionListener {
             ConectaMySQL conexao = new ConectaMySQL();
             Connection cn = conexao.openDB();
             PreparedStatement ps = cn.prepareStatement(
-                    "INSERT INTO ABASTECIMENTO (KT_Atual, Data, PlacaVeiculo, Tipo, qtdAbastecida, precoLitro, localizacaoPosto) VALUES (?, ?,?,?,?,?,?)");
+                    "INSERT INTO ABASTECIMENTO (KT_Atual, Data, PlacaVeiculo, Tipo, qtdAbastecida, precoLitro, localizacaoPosto,KM_Litros) VALUES (?, ?,?,?,?,?,?,?)");
             ps.setInt(1, km);
             ps.setString(2, dt);
             ps.setString(3, veiculo);
@@ -269,6 +299,14 @@ public class Janela implements ActionListener {
             ps.setInt(5, qtdAbastecida);
             ps.setDouble(6, preco);
             ps.setString(7, posto);
+
+            double ultimaKM = calcularUltimaKM(veiculo);
+            if (ultimaKM > 0) {
+                double mediaConsumo = (km-ultimaKM) / qtdAbastecida;
+                ps.setDouble(8, mediaConsumo);
+            }else{
+                ps.setDouble(8, 0);
+            }
 
             int linhasAfetadas = ps.executeUpdate();
             if (linhasAfetadas > 0) {
@@ -293,36 +331,6 @@ public class Janela implements ActionListener {
         return novoBotao;
     }
 
-    public JComboBox criarComboBox(JComboBox novoComboBox, String texto, DefaultComboBoxModel<String> modeloComboBox) {
-        novoComboBox = new JComboBox();
-        modeloComboBox.addElement(texto);
-        try {
-            ConectaMySQL conexao = new ConectaMySQL();
-            Connection cn = conexao.openDB();
-            Statement st = cn.createStatement();
-            if (texto.equals("Selecionar Posto")) {
-                ResultSet rs = st.executeQuery("SELECT * FROM POSTO");
-                while (rs.next()) {
-                    String nome = rs.getString("Nome");
-                    String localizacao = rs.getString("Localizacao");
-                    modeloComboBox.addElement(nome + " : " + localizacao);
-                }
-            } else if (texto.equals("Selecionar Veículo")) {
-                ResultSet rs = st.executeQuery("SELECT * FROM VEICULO");
-                while (rs.next()) {
-                    String placa = rs.getString("Placa");
-                    modeloComboBox.addElement(placa);
-                }
-            }
-            conexao.closeDB();
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Falha ao realizar a operação.\nVerifique se o registro já existe!");
-        }
-        novoComboBox.setModel(modeloComboBox);
-        novoComboBox.setPreferredSize(new Dimension(registroLeft.width / 100 * 95, registroLeft.height / 4));
-        return novoComboBox;
-    }
-
     public DefaultTableModel atualizarTabela(DefaultTableModel model) {
         while (model.getRowCount() > 0) {
             model.removeRow(0);
@@ -337,6 +345,7 @@ public class Janela implements ActionListener {
                 String veiculo = rs.getString("PlacaVeiculo");
                 Double valor = rs.getDouble("precoLitro");
                 int qt = rs.getInt("qtdAbastecida");
+                double kml = rs.getDouble("KM_Litros");
                 SimpleDateFormat dataConvertida = new SimpleDateFormat("dd/MM/yyyy");
                 SimpleDateFormat dataRecebida = new SimpleDateFormat("yyyy-MM-dd");
                 try {
@@ -345,8 +354,9 @@ public class Janela implements ActionListener {
                 } catch (ParseException ex) {
                     ex.printStackTrace();
                 }
-                model.addRow(new Object[] { data, veiculo, "R$" + (valor * qt), " - " });
+                model.addRow(new Object[] { data, veiculo, "R$" + (valor * qt), kml});
             }
+
             conexao.closeDB();
         } catch (SQLException e) {
             System.out.println("Falha ao realizar a operação.");
@@ -356,85 +366,61 @@ public class Janela implements ActionListener {
         return model;
     }
 
-    private class Frame extends JFrame {
-        public Frame(int w, int h) {
-            super();
-            this.setSize(new Dimension(w, h));
-            this.setResizable(false);
-            this.getContentPane().setBackground(new Color(255, 255, 255));
-            this.setLocationRelativeTo(null);
-            this.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-            this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            this.setVisible(true);
-        }
+    private JFrame criarFrame(int w, int h) {
+        JFrame novoFrame = new JFrame();
+        novoFrame.setSize(new Dimension(w, h));
+        novoFrame.setResizable(false);
+        novoFrame.getContentPane().setBackground(new Color(255, 255, 255));
+        novoFrame.setLocationRelativeTo(null);
+        novoFrame.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+        novoFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        novoFrame.setVisible(true);
+        return novoFrame;
     }
 
-    private class Panel extends JPanel {
-        public int width, height;
-
-        public Panel(int w, int h) {
-            super();
-            this.width = w;
-            this.height = h;
-            this.setPreferredSize(new Dimension(w, h));
-            this.setOpaque(true);
+    private JPanel criarPainel(int posicao, int w, int h, int hgap, int vgap, boolean borda) {
+        JPanel novoPainel = new JPanel();
+        novoPainel.setPreferredSize(new Dimension(w, h));
+        novoPainel.setSize(w, h);
+        novoPainel.setLayout(new FlowLayout(posicao, hgap, vgap));
+        novoPainel.setBackground(Color.WHITE);
+        if (borda) {
+            novoPainel.setBorder(BorderFactory.createLineBorder(Color.black, 2));
         }
+        return novoPainel;
+    }
 
-        public Panel(int posicao, int w, int h, int hgap, int vgap, boolean borda) {
-            this.width = w;
-            this.height = h;
-            this.setPreferredSize(new Dimension(w, h));
-            this.setLayout(new FlowLayout(posicao, hgap, vgap));
-            this.setBackground(Color.WHITE);
-            if (borda) {
-                this.setBorder(BorderFactory.createLineBorder(Color.black, 2));
+    private JTextField novoTextFiel(JPanel painel, String texto) {
+        JPanel novoPainel = criarPainel(FlowLayout.LEFT, painel.getWidth() - 7, 30, 10, 0, false);
+
+        JTextField novo = new JTextField();
+        JLabel nome = new JLabel(texto);
+        nome.setPreferredSize(new Dimension(80, 25));
+        novo.setPreferredSize(new Dimension(300, 25));
+        novoPainel.add(nome);
+        novoPainel.add(novo);
+        painel.add(novoPainel);
+
+        return novo;
+    }
+
+    private double calcularUltimaKM(String veiculo) {
+        try {
+            ConectaMySQL conexao = new ConectaMySQL();
+            Connection cn = conexao.openDB();
+            Statement st = cn.createStatement();
+            ResultSet rs = st.executeQuery("SELECT KT_Atual FROM ABASTECIMENTO WHERE PlacaVeiculo = '" + veiculo
+                    + "' ORDER BY Data DESC LIMIT 1");
+
+            if (rs.next()) {
+                return rs.getDouble("KT_Atual");
+            } else {
+                return 0;
             }
-        }
-    }
-
-    public class EnterField extends JPanel {
-
-        JTextField texto;
-        JLabel nome;
-        Dimension di;
-
-        public EnterField(String t) {
-            super();
-
-            this.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 0));
-            this.setName(t);
-            this.setBackground(Color.white);
-
-            texto = new JTextField();
-            nome = new JLabel(t);
-            nome.setHorizontalAlignment(JLabel.LEFT);
-            this.add(nome);
-            this.add(texto);
-        }
-
-        public String getText() {
-            return this.texto.getText();
-        }
-
-        public void init(Dimension d) {
-            this.di = d;
-            this.setPreferredSize(d);
-            this.nome.setPreferredSize(new Dimension(d.width / 7, d.height));
-            this.texto.setPreferredSize(new Dimension(d.width / 7 * 5, d.height - d.height / 5));
-        }
-
-    }
-
-    private class IconPanel extends Panel {
-        JLabel label;
-        ImageIcon img;
-
-        public IconPanel(int w, int h, String path) {
-            super(w, h);
-            img = new ImageIcon(path);
-            img = new ImageIcon(img.getImage().getScaledInstance(w - w / 5, h - h / 5, Image.SCALE_FAST));
-            label = new JLabel(img);
-            add(label);
+        } catch (SQLException e) {
+            System.out.println("Falha ao realizar a operação.");
+            e.printStackTrace();
+            return 0;
         }
     }
 
