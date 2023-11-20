@@ -7,7 +7,6 @@ public class ConectaMySQL {
 	private Connection con;
 	private Statement stmt;
 	private ResultSet rs;
-	// private String nome = null, telefone = null;
 
 	public static void main(String args[]) {
 		ConectaMySQL b = new ConectaMySQL();
