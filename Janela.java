@@ -239,7 +239,7 @@ public class Janela extends JFrame implements ActionListener {
             double ultimaKM = calcularUltimaKM(veiculo);
             System.out.println(ultimaKM);
             if(km<ultimaKM){
-                System.out.println("km menor que ultimakm");
+                JOptionPane.showMessageDialog(null, "A quilometragem não pode ser menor do que a do último registro de um determinado veículo! (Último registro de km desse veículo: " + ultimaKM + ")");
                 return;
             }
             int qtdAbastecida = Integer.parseInt(qtd.getText());
