@@ -8,6 +8,7 @@ public class Veiculo {
     private String placa;
     private String modelo;
     private String cor;
+    int kml;
 
     public String getPlaca() {
         return placa;

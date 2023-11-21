@@ -5,8 +5,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class Localizacao {
-    String logradouro, bairro, cidade, estado, cep;
-    int numero;
+    private String logradouro, bairro, cidade, estado, cep;
+    private int numero;
 
     public Localizacao(String cep, int numero) {
         this.cep = cep;
